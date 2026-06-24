@@ -13,10 +13,12 @@ export function getMemWalClient(userId?: string): MemWal {
   // Sanitise userId to ensure it only has safe characters if needed, but UUIDs/alphanumeric are fine
   const namespace = userId ? `${baseNamespace}-${userId}` : baseNamespace;
 
+  console.log(`[MEMWAL] getMemWalClient: key is ${key ? "SET" : "MISSING"}, serverUrl: ${serverUrl || "https://relayer.memory.walrus.xyz"}`);
+
   return MemWal.create({
     key: key || "0x0000000000000000000000000000000000000000000000000000000000000000",
     accountId: accountId || "0x0000000000000000000000000000000000000000000000000000000000000000",
-    serverUrl: "https://relayer.memory.walrus.xyz",
+    serverUrl: serverUrl || "https://relayer.memory.walrus.xyz",
     namespace,
   });
 }

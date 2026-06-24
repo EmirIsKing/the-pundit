@@ -23,8 +23,8 @@ export async function POST(req: Request) {
   try {
     const [debateRecall, predictionRecall, profileRecall] = await Promise.all([
       memwal.recall({ query: `debate ${topic}`, limit: 5 }),
-      memwal.recall({ query: "prediction", limit: 30 }),
-      memwal.recall({ query: "profile", limit: 5 }),
+      memwal.recall({ query: "{\"type\":\"p\"", limit: 30 }),
+      memwal.recall({ query: "{\"type\":\"prof\"", limit: 5 }),
     ]);
 
     // Parse past debates

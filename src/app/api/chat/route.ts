@@ -23,8 +23,8 @@ export async function POST(req: Request) {
   try {
     const [interactionRecall, predictionRecall, profileRecall] = await Promise.all([
       memwal.recall({ query: lastUserMessage.content, limit: 10 }),
-      memwal.recall({ query: "prediction", limit: 50 }),
-      memwal.recall({ query: "profile", limit: 5 }),
+      memwal.recall({ query: "{\"type\":\"p\"", limit: 50 }),
+      memwal.recall({ query: "{\"type\":\"prof\"", limit: 5 }),
     ]);
 
     if (interactionRecall?.results?.length > 0) {

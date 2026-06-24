@@ -9,7 +9,7 @@ export async function GET(req: Request) {
 
   try {
     const recallResult = await memwal.recall({
-      query: "prediction",
+      query: "{\"type\":\"p\"",
       limit: 100,
     });
 

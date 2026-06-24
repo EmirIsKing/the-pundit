@@ -30,8 +30,8 @@ export async function GET(req: Request) {
   try {
     // 1. Recall profile and predictions in parallel
     const [profileRecall, predictionsRecall] = await Promise.all([
-      memwal.recall({ query: "profile", limit: 20 }),
-      memwal.recall({ query: "prediction", limit: 100 }),
+      memwal.recall({ query: "{\"type\":\"prof\"", limit: 20 }),
+      memwal.recall({ query: "{\"type\":\"p\"", limit: 100 }),
     ]);
 
     // Parse user profile
