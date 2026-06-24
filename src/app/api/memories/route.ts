@@ -3,6 +3,8 @@ import { getMemWalClient } from "@/lib/memwal";
 import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 
+export const maxDuration = 60;
+
 export async function GET(req: Request) {
   const userId = req.headers.get("x-user-id") || "";
   const { searchParams } = new URL(req.url);
@@ -24,6 +26,16 @@ export async function GET(req: Request) {
           try {
             const parsed = JSON.parse(m.text);
             if (parsed.type === "prediction") return parsed;
+            if (parsed.type === "p") {
+              return {
+                type: "prediction",
+                team: parsed.t,
+                stage: parsed.s,
+                confidence: parsed.c,
+                made_on: parsed.d,
+                user_quote: parsed.q || "",
+              };
+            }
           } catch {}
           return null;
         })

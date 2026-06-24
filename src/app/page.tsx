@@ -1,7 +1,21 @@
+"use client";
+
+import { useState } from "react";
 import ChatInterface from "@/components/ChatInterface";
 import MemoryPanel from "@/components/MemoryPanel";
+import Sidebar from "@/components/Sidebar";
+import FeedbackModal from "@/components/FeedbackModal";
 
 export default function Home() {
+  const [activeAgent, setActiveAgent] = useState({
+    id: "pundit",
+    name: "The Pundit",
+    description: "Opinionated analyst tracking predictions on Walrus.",
+    role: "ROASTING",
+    systemPrompt: undefined,
+  });
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#050505] text-[#e5e7eb] font-sans selection:bg-[#cfa86e]/30 selection:text-white">
       {/* 1. TOP HEADER (h-20) */}
@@ -24,6 +38,13 @@ export default function Home() {
             <span className="font-mono text-xs text-[#4ade80] tracking-wider uppercase font-semibold">Mainnet Live</span>
           </div>
           
+          <button
+            onClick={() => setIsFeedbackOpen(true)}
+            className="px-4 py-2 border border-white/10 hover:border-[#cfa86e]/60 hover:text-[#cfa86e] font-mono text-xs tracking-wider uppercase transition-all duration-200 bg-[#0a0a0c] hover:shadow-[0_0_10px_rgba(207,168,110,0.1)] rounded-none"
+          >
+            Leave Feedback
+          </button>
+          
           {/* Squared action button */}
           <a
             href="https://github.com/EmirIsKing/the-pundit"
@@ -39,71 +60,7 @@ export default function Home() {
       {/* 2. CORE WORKSPACE */}
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT SIDEBAR (w-72) */}
-        <aside className="w-72 shrink-0 bg-[#080808] border-r border-white/10 flex flex-col p-6 overflow-y-auto justify-between">
-          <div className="flex flex-col gap-6">
-            <div>
-              <span className="font-mono text-[10px] tracking-widest text-white/40 uppercase block mb-3">
-                Active AI Agents
-              </span>
-              
-              {/* Agent Card 1: Active */}
-              <div className="p-4 bg-[#0a0a0c] border border-white/10 border-l-2 border-l-[#cfa86e] mb-3 light-glint">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-serif text-sm font-bold text-white tracking-wide">The Pundit</h4>
-                  <span className="font-mono text-[9px] px-1.5 py-0.5 bg-[#cfa86e]/10 text-[#cfa86e] border border-[#cfa86e]/20 tracking-wider uppercase font-semibold">
-                    ROASTING
-                  </span>
-                </div>
-                <p className="text-[11px] text-white/60 mb-3 leading-relaxed">
-                  Opinionated analyst tracking predictions on Walrus.
-                </p>
-                <div className="flex justify-between font-mono text-[9px] text-white/40">
-                  <span>MEM: 8.2 KB</span>
-                  <span>SYNC: LIVE</span>
-                </div>
-              </div>
-
-              {/* Agent Card 2: Inactive */}
-              <div className="p-4 bg-[#0a0a0c]/40 border border-white/5 opacity-50 mb-3 hover:opacity-75 transition-opacity duration-200">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-serif text-sm font-bold text-white/80">Tactical Scout</h4>
-                  <span className="font-mono text-[9px] px-1.5 py-0.5 bg-white/5 text-white/40 border border-white/10 tracking-wider uppercase">
-                    STBY
-                  </span>
-                </div>
-                <p className="text-[11px] text-white/50 mb-3">
-                  Undergoing model compilation for tactics matching.
-                </p>
-                <div className="flex justify-between font-mono text-[9px] text-white/30">
-                  <span>MEM: 0.0 KB</span>
-                  <span>SYNC: --</span>
-                </div>
-              </div>
-
-              {/* Agent Card 3: Inactive */}
-              <div className="p-4 bg-[#0a0a0c]/40 border border-white/5 opacity-50 mb-3 hover:opacity-75 transition-opacity duration-200">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-serif text-sm font-bold text-white/80">Sentiment Bot</h4>
-                  <span className="font-mono text-[9px] px-1.5 py-0.5 bg-white/5 text-white/40 border border-white/10 tracking-wider uppercase">
-                    STBY
-                  </span>
-                </div>
-                <p className="text-[11px] text-white/50 mb-3">
-                  Real-time sentiment analyzer for fan reaction streams.
-                </p>
-                <div className="flex justify-between font-mono text-[9px] text-white/30">
-                  <span>MEM: 0.0 KB</span>
-                  <span>SYNC: --</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom pinned deploy button */}
-          <button className="w-full py-2.5 border border-[#cfa86e]/30 text-[#cfa86e] hover:bg-[#cfa86e] hover:text-[#050505] transition-all duration-300 font-mono text-xs uppercase tracking-widest rounded-none hover:shadow-[0_0_12px_rgba(207,168,110,0.2)]">
-            + Deploy New Agent
-          </button>
-        </aside>
+        <Sidebar activeAgentId={activeAgent.id} onSelectAgent={setActiveAgent as any} />
 
         {/* CENTER CONTENT AREA */}
         <main className="flex-1 bg-[#0a0a0c] flex flex-col overflow-hidden">
@@ -111,7 +68,7 @@ export default function Home() {
           <div className="flex-1 flex overflow-hidden border-b border-white/5">
             {/* Chat Column (w-7/12) */}
             <section className="w-7/12 flex flex-col border-r border-white/10 h-full overflow-hidden">
-              <ChatInterface />
+              <ChatInterface agentId={activeAgent.id} customSystemPrompt={activeAgent.systemPrompt} />
             </section>
 
             {/* Memory Stream Column (w-5/12) */}
@@ -133,6 +90,8 @@ export default function Home() {
           WALRUS <span className="font-normal text-[#cfa86e]">MEMORY</span> // PERSISTENT DATA ORACLE
         </div>
       </footer>
+
+      {isFeedbackOpen && <FeedbackModal onClose={() => setIsFeedbackOpen(false)} />}
     </div>
   );
 }

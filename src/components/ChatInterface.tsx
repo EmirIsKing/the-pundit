@@ -10,7 +10,12 @@ interface ChatMessage {
   timestamp: string;
 }
 
-export default function ChatInterface() {
+interface ChatInterfaceProps {
+  agentId?: string;
+  customSystemPrompt?: string;
+}
+
+export default function ChatInterface({ agentId, customSystemPrompt }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -63,6 +68,8 @@ export default function ChatInterface() {
             role: m.role,
             content: m.content,
           })),
+          agentId,
+          customSystemPrompt,
         }),
       });
 
