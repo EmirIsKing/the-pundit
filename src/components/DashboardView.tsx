@@ -50,11 +50,12 @@ function computeStats(predictions: Prediction[]): DashboardStats {
 }
 
 function StatCard({ label, value, subtext, accent }: { label: string; value: string | number; subtext?: string; accent?: boolean }) {
+  const isLongVal = typeof value === "string" && value.length > 8;
   return (
-    <div className="p-4 bg-[#080808] border border-white/5 light-glint">
-      <span className="font-mono text-[9px] tracking-widest text-white/40 uppercase block mb-1">{label}</span>
-      <div className={`font-serif text-2xl font-bold ${accent ? "text-[#cfa86e]" : "text-white"}`}>{value}</div>
-      {subtext && <span className="font-mono text-[9px] text-white/30">{subtext}</span>}
+    <div className="p-4 bg-[#080808] border border-white/5 light-glint min-w-0">
+      <span className="font-mono text-[9px] tracking-widest text-white/40 uppercase block mb-1 truncate">{label}</span>
+      <div className={`font-serif font-bold ${isLongVal ? "text-[11px] sm:text-base md:text-lg" : "text-lg sm:text-2xl"} ${accent ? "text-[#cfa86e]" : "text-white"} truncate`}>{value}</div>
+      {subtext && <span className="font-mono text-[9px] text-white/30 block mt-0.5">{subtext}</span>}
     </div>
   );
 }
@@ -75,8 +76,8 @@ function DonutChart({ high, medium, low }: { high: number; medium: number; low: 
   const lDash = (lPct / 100) * circumference;
 
   return (
-    <div className="flex items-center gap-6">
-      <svg width="100" height="100" viewBox="0 0 100 100" className="shrink-0">
+    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
+      <svg width="80" height="80" viewBox="0 0 100 100" className="shrink-0">
         <circle cx="50" cy="50" r={radius} fill="none" stroke="#050505" strokeWidth="12" />
         {/* High */}
         <circle
@@ -103,18 +104,18 @@ function DonutChart({ high, medium, low }: { high: number; medium: number; low: 
           {total}
         </text>
       </svg>
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-[#4ade80] rounded-sm" />
-          <span className="text-xs text-white/60">High ({high})</span>
+      <div className="grid grid-cols-3 sm:flex sm:flex-col gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-2 justify-center sm:justify-start">
+          <span className="w-2.5 h-2.5 bg-[#4ade80] rounded-sm shrink-0" />
+          <span className="text-[10px] text-white/60">High ({high})</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-[#cfa86e] rounded-sm" />
-          <span className="text-xs text-white/60">Medium ({medium})</span>
+        <div className="flex items-center gap-2 justify-center sm:justify-start">
+          <span className="w-2.5 h-2.5 bg-[#cfa86e] rounded-sm shrink-0" />
+          <span className="text-[10px] text-white/60">Med ({medium})</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-red-500 rounded-sm" />
-          <span className="text-xs text-white/60">Low ({low})</span>
+        <div className="flex items-center gap-2 justify-center sm:justify-start">
+          <span className="w-2.5 h-2.5 bg-red-500 rounded-sm shrink-0" />
+          <span className="text-[10px] text-white/60">Low ({low})</span>
         </div>
       </div>
     </div>
@@ -306,26 +307,28 @@ export default function DashboardView() {
                       }`} />
                     </div>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-serif text-sm font-bold text-white">{p.team}</span>
-                        <span className="font-mono text-[8px] text-white/30 uppercase">{p.stage}</span>
+                    {/* Content Row - Flexes nicely to prevent overlapping */}
+                    <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-1">
+                          <span className="font-serif text-sm font-bold text-white leading-tight truncate max-w-[150px] sm:max-w-none">{p.team}</span>
+                          <span className="font-mono text-[8px] text-white/30 uppercase tracking-wider shrink-0">{p.stage}</span>
+                        </div>
+                        {p.user_quote && (
+                          <p className="text-[11px] text-white/50 italic leading-normal truncate max-w-full">&ldquo;{p.user_quote}&rdquo;</p>
+                        )}
+                        <span className="font-mono text-[8px] text-white/25 mt-1 block">{p.made_on}</span>
                       </div>
-                      {p.user_quote && (
-                        <p className="text-[11px] text-white/50 italic truncate">&ldquo;{p.user_quote}&rdquo;</p>
-                      )}
-                      <span className="font-mono text-[8px] text-white/25 mt-1 block">{p.made_on}</span>
-                    </div>
 
-                    {/* Confidence badge */}
-                    <span className={`shrink-0 font-mono text-[8px] px-1.5 py-0.5 border uppercase tracking-wider ${
-                      p.confidence === "high"
-                        ? "border-[#4ade80]/20 text-[#4ade80]"
-                        : p.confidence === "medium"
-                        ? "border-[#cfa86e]/20 text-[#cfa86e]"
-                        : "border-red-500/20 text-red-400"
-                    }`}>{p.confidence}</span>
+                      {/* Confidence badge */}
+                      <span className={`self-start sm:self-center shrink-0 font-mono text-[8px] px-1.5 py-0.5 border uppercase tracking-wider ${
+                        p.confidence === "high"
+                          ? "border-[#4ade80]/20 text-[#4ade80] bg-[#4ade80]/5"
+                          : p.confidence === "medium"
+                          ? "border-[#cfa86e]/20 text-[#cfa86e] bg-[#cfa86e]/5"
+                          : "border-red-500/20 text-red-400 bg-red-500/5"
+                      }`}>{p.confidence}</span>
+                    </div>
                   </div>
                 ))}
               </div>
