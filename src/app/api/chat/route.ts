@@ -16,13 +16,15 @@ export async function POST(req: Request) {
   const lastUserMessage = messages[messages.length - 1];
   const memwal = getMemWalClient(userId);
 
-  // 1. RECALL: Fetch relevant memories to build context
+  // 1. RECALL: Fetch relevant memories to build context (interactions, predictions, and profile)
   let contextText = "";
   let predictionsContext = "";
+  let profileContext = "No user profile set yet.";
   try {
-    const [interactionRecall, predictionRecall] = await Promise.all([
+    const [interactionRecall, predictionRecall, profileRecall] = await Promise.all([
       memwal.recall({ query: lastUserMessage.content, limit: 10 }),
       memwal.recall({ query: "prediction", limit: 50 }),
+      memwal.recall({ query: "profile", limit: 5 }),
     ]);
 
     if (interactionRecall?.results?.length > 0) {
@@ -59,6 +61,19 @@ export async function POST(req: Request) {
         )
         .join("\n");
     }
+
+    // Extract profile details
+    const profileResults = profileRecall?.results || [];
+    for (const item of profileResults) {
+      try {
+        const parsed = JSON.parse(item.text);
+        if (parsed.type === "prof") {
+          profileContext = `Favorite Team: ${parsed.team || parsed.t || "None"}
+Favorite Players: ${parsed.players || parsed.p || "None"}`;
+          break;
+        }
+      } catch {}
+    }
   } catch (error) {
     console.error("Failed to recall memories:", error);
   }
@@ -78,7 +93,10 @@ You speak in a highly energetic, trending, internet-slang-aware tone (e.g. using
 
   const systemPrompt = `${systemPromptBase}
 
-You have a persistent, on-chain memory of this user's past predictions, stored on the Walrus decentralised network.
+You have a persistent, on-chain memory of this user's past predictions and preferences, stored on the Walrus decentralised network.
+
+=== USER PROFILE (from Walrus Memory) ===
+${profileContext}
 
 === USER'S TRACKED PREDICTIONS (from Walrus Memory) ===
 ${predictionsContext || "No structured predictions recorded yet."}
@@ -87,11 +105,12 @@ ${predictionsContext || "No structured predictions recorded yet."}
 ${contextText || "No prior interactions found."}
 
 === YOUR INSTRUCTIONS ===
-1. You MUST reference the user's past predictions when relevant. If they contradict themselves, call it out.
+1. You MUST reference the user's past predictions and favorite team/players when relevant. If they contradict themselves, call it out.
 2. If they have a prediction track record, use it (e.g., "You predicted Brazil last time, and now you want Argentina?").
-3. Extract and acknowledge any NEW predictions they make in this message.
-4. Keep responses concise: 1-3 punchy paragraphs.
-5. End with a provocative question or challenge to keep them engaged.`;
+3. If they support a specific team (from profile), notice their bias and tease them about it (e.g., "As a France supporter, of course you think they won't choke").
+4. Extract and acknowledge any NEW predictions they make in this message.
+5. Keep responses concise: 1-3 punchy paragraphs. Use bold (**text**) for emphasized football terms or team names.
+6. End with a provocative question or challenge to keep them engaged.`;
 
   // 2. STREAM the response
   const result = streamText({
@@ -110,7 +129,15 @@ ${contextText || "No prior interactions found."}
         console.error("Failed to store interaction memory:", err);
       }
 
-      // 4. EXTRACT & STORE structured predictions
+      // 4. ANALYZE: Use MemWal analyze API to auto-extract and register semantic memories in the background
+      try {
+        await memwal.analyze(lastUserMessage.content);
+        console.log("[ANALYZE] Semantic conversation facts stored on Walrus.");
+      } catch (err) {
+        console.error("[ANALYZE] failed to run semantic analysis:", err);
+      }
+
+      // 5. EXTRACT & STORE structured predictions
       try {
         const extraction = await generateText({
           model: google("gemini-2.5-flash"),

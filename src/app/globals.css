@@ -82,3 +82,47 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* Landing page Terminal line animations */
+@keyframes terminalLine {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-terminal-line {
+  animation: terminalLine 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Background floating decorations */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(25px, 20px) scale(1.03);
+  }
+}
+
+@keyframes floatSlowReverse {
+  0%, 100% {
+    transform: translate(0, 0) scale(1.03);
+  }
+  50% {
+    transform: translate(-20px, -25px) scale(1);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 15s ease-in-out infinite;
+}
+
+.animate-float-slow-reverse {
+  animation: floatSlowReverse 18s ease-in-out infinite;
+}
+
