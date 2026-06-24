@@ -23,6 +23,7 @@ export default function UserProfile() {
   const [isSaving, setIsSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [userId, setUserId] = useState<string>("");
 
   const fetchProfile = useCallback(async () => {
     setIsLoading(true);
@@ -47,6 +48,7 @@ export default function UserProfile() {
   }, []);
 
   useEffect(() => {
+    setUserId(getOrCreateUserId());
     fetchProfile();
     const handler = () => fetchProfile();
     window.addEventListener("walrus-memory-updated", handler);
@@ -148,7 +150,7 @@ export default function UserProfile() {
                   {profile.team || "Anonymous Supporter"}
                 </h3>
                 <span className="font-mono text-[9px] text-white/30 uppercase">
-                  ID: {getOrCreateUserId().slice(-12)}
+                  ID: {userId ? userId.slice(-12) : "..."}
                 </span>
               </div>
             </div>

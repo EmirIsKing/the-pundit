@@ -50,6 +50,7 @@ export default function Sidebar({ activeAgentId, onSelectAgent, activeView, onSe
     accuracyScore: 100,
     predictionCount: 0,
   });
+  const [userId, setUserId] = useState<string>("");
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -89,6 +90,7 @@ export default function Sidebar({ activeAgentId, onSelectAgent, activeView, onSe
   }, []);
 
   useEffect(() => {
+    setUserId(getOrCreateUserId());
     fetchProfile();
     fetchCustomAgents();
 
@@ -135,7 +137,7 @@ export default function Sidebar({ activeAgentId, onSelectAgent, activeView, onSe
                 {profile.team || "Select Favorite Team"}
               </h4>
               <span className="font-mono text-[8px] text-white/30 block uppercase tracking-wider">
-                ID: {getOrCreateUserId().slice(-8)}
+                ID: {userId ? userId.slice(-8) : "..."}
               </span>
             </div>
           </div>

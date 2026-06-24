@@ -91,7 +91,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 h-16 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-6 md:px-12">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#8a6d3b] via-[#cfa86e] to-[#fff] flex items-center justify-center shadow-[0_0_12px_rgba(207,168,110,0.3)] border border-[#cfa86e]/50">
-            <span className="font-serif text-[#050505] font-black text-xs">P</span>
+            <img className="rounded-full" src="/logo-pundit.jpg" alt="logo" />
           </div>
           <span className="font-serif text-lg tracking-wide font-light text-white">
             THE <span className="italic font-bold text-[#cfa86e]">PUNDIT</span>
@@ -226,9 +226,8 @@ export default function LandingPage() {
                 </span>
                 <span className="text-sm text-white/80">{row.name}</span>
                 <span className="font-mono text-xs text-white/50">{row.preds}</span>
-                <span className={`font-mono text-xs font-semibold ${
-                  parseInt(row.acc) >= 70 ? "text-[#4ade80]" : "text-[#cfa86e]"
-                }`}>{row.acc}</span>
+                <span className={`font-mono text-xs font-semibold ${parseInt(row.acc) >= 70 ? "text-[#4ade80]" : "text-[#cfa86e]"
+                  }`}>{row.acc}</span>
               </div>
             ))}
           </div>

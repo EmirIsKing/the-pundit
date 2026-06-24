@@ -24,6 +24,7 @@ export default function MemoryPanel() {
   const [lastSynced, setLastSynced] = useState<string>("NEVER");
   const [epochCount, setEpochCount] = useState<number>(318);
   const [blockCount, setBlockCount] = useState<number>(10482);
+  const [userId, setUserId] = useState<string>("");
 
   const fetchPredictions = useCallback(async () => {
     setIsLoadingLedger(true);
@@ -53,6 +54,7 @@ export default function MemoryPanel() {
 
   // Poll predictions every 20s
   useEffect(() => {
+    setUserId(getOrCreateUserId());
     fetchPredictions();
     const interval = setInterval(fetchPredictions, 20000);
     return () => clearInterval(interval);
@@ -242,7 +244,7 @@ export default function MemoryPanel() {
 
               <div className="flex justify-between items-center font-mono text-[8px] text-white/30 pt-1">
                 <span>COMMITTED: {p.made_on}</span>
-                <span>NAMESPACE: ...{getOrCreateUserId().slice(-6)}</span>
+                <span>NAMESPACE: ...{userId ? userId.slice(-6) : "..."}</span>
               </div>
             </div>
           ))

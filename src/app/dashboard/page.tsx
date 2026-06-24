@@ -47,7 +47,7 @@ export default function DashboardPage() {
             </svg>
           </button>
           <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-tr from-[#8a6d3b] via-[#cfa86e] to-[#fff] flex items-center justify-center shadow-[0_0_12px_rgba(207,168,110,0.3)] border border-[#cfa86e]/50">
-            <span className="font-serif text-[#050505] font-black text-xs md:text-sm">P</span>
+            <img className="rounded-full" src="/logo-pundit.jpg" alt="logo" />
           </div>
           <h1 className="font-serif text-lg md:text-2xl tracking-wide font-light text-white">
             THE <span className="italic font-bold text-[#cfa86e]">PUNDIT</span>
@@ -83,11 +83,10 @@ export default function DashboardPage() {
           <button
             key={tab.id}
             onClick={() => setActiveView(tab.id)}
-            className={`px-3 md:px-4 py-1.5 font-mono text-[10px] md:text-xs tracking-wider uppercase transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 ${
-              activeView === tab.id
-                ? "text-[#cfa86e] border-b-2 border-[#cfa86e] bg-[#cfa86e]/5 font-bold"
-                : "text-white/40 hover:text-white/70 border-b-2 border-transparent"
-            }`}
+            className={`px-3 md:px-4 py-1.5 font-mono text-[10px] md:text-xs tracking-wider uppercase transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 ${activeView === tab.id
+              ? "text-[#cfa86e] border-b-2 border-[#cfa86e] bg-[#cfa86e]/5 font-bold"
+              : "text-white/40 hover:text-white/70 border-b-2 border-transparent"
+              }`}
           >
             <span className="text-sm">{tab.icon}</span>
             <span>{tab.label}</span>
