@@ -119,7 +119,7 @@ export default function Sidebar({ activeAgentId, onSelectAgent, activeView, onSe
   ] as const;
 
   return (
-    <aside className="w-72 h-full shrink-0 bg-[#080808] border-r border-white/10 flex flex-col p-5 justify-between overflow-y-auto scrollbar-thin">
+    <aside className="w-full h-full shrink-0 bg-[#080808] border-r border-white/10 flex flex-col p-5 justify-between overflow-y-auto scrollbar-thin">
       <div className="space-y-6">
         {/* User Profile Header Card */}
         <div

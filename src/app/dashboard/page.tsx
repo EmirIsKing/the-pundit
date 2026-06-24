@@ -107,7 +107,7 @@ export default function DashboardPage() {
         {/* SIDEBAR */}
         <div className={`
           fixed md:relative z-40 md:z-auto
-          w-64 md:w-64 h-full
+          w-72 md:w-72 h-full
           transition-transform duration-300 ease-out
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}>
