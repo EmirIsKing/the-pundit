@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { getMemWalClient } from "@/lib/memwal";
 
-export async function GET() {
-  const memwal = getMemWalClient();
+export async function GET(req: Request) {
+  const userId = req.headers.get("x-user-id") || "";
+  const memwal = getMemWalClient(userId);
 
   try {
     const recallResult = await memwal.recall({
-      query: "prediction World Cup 2026 winner team stage confidence",
+      query: "prediction",
+      limit: 100,
     });
 
     const allResults = recallResult?.results || [];

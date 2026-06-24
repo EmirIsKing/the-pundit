@@ -11,18 +11,19 @@ interface CustomMessage {
 }
 
 export async function POST(req: Request) {
+  const userId = req.headers.get("x-user-id") || "";
   const { messages }: { messages: CustomMessage[] } = await req.json();
 
   const lastUserMessage = messages[messages.length - 1];
-  const memwal = getMemWalClient();
+  const memwal = getMemWalClient(userId);
 
   // 1. RECALL: Fetch relevant memories to build context
   let contextText = "";
   let predictionsContext = "";
   try {
     const [interactionRecall, predictionRecall] = await Promise.all([
-      memwal.recall({ query: lastUserMessage.content }),
-      memwal.recall({ query: "prediction World Cup 2026 winner team" }),
+      memwal.recall({ query: lastUserMessage.content, limit: 10 }),
+      memwal.recall({ query: "prediction", limit: 50 }),
     ]);
 
     if (interactionRecall?.results?.length > 0) {
@@ -107,12 +108,17 @@ If the user made a clear prediction, respond with ONLY a valid JSON object in th
 If no clear prediction was made, respond with exactly: NO_PREDICTION`,
         });
 
-        const extractedText = extraction.text.trim();
-        if (extractedText !== "NO_PREDICTION" && extractedText.startsWith("{")) {
-          // Validate it's parseable JSON
-          JSON.parse(extractedText);
-          await memwal.remember(extractedText);
-          console.log("Structured prediction stored:", extractedText);
+        let extractedText = extraction.text.trim();
+        if (extractedText.startsWith("```")) {
+          extractedText = extractedText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
+        }
+
+        if (extractedText !== "NO_PREDICTION") {
+          const parsed = JSON.parse(extractedText);
+          if (parsed && parsed.type === "prediction") {
+            await memwal.remember(JSON.stringify(parsed));
+            console.log("Structured prediction stored:", parsed);
+          }
         }
       } catch (err) {
         console.error("Failed to extract/store prediction:", err);

@@ -4,16 +4,18 @@ import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 
 export async function GET(req: Request) {
+  const userId = req.headers.get("x-user-id") || "";
   const { searchParams } = new URL(req.url);
   const mode = searchParams.get("mode");
 
-  const memwal = getMemWalClient();
+  const memwal = getMemWalClient(userId);
 
   // Roast mode: generate a Pundit roast of the user's prediction record
   if (mode === "roast") {
     try {
       const recallResult = await memwal.recall({
-        query: "prediction World Cup 2026 winner team stage",
+        query: "prediction",
+        limit: 100,
       });
 
       const allMemories = recallResult?.results || [];

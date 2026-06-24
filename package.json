@@ -16,10 +16,12 @@
     "@mysten/seal": "^1.2.2",
     "@mysten/sui": "^2.20.0",
     "@mysten/walrus": "^1.2.2",
+    "@tailwindcss/postcss": "^4.3.1",
     "ai": "^6.0.209",
     "next": "16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "tailwindcss": "^4.3.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
